@@ -13,9 +13,9 @@ services:
     networks:
       - inception
     volumes:
-      #      - ./requirements/nginx/conf/:/etc/nginx/http.d/
+      - ./requirements/nginx/conf/:/etc/nginx/http.d/
       #      - ./requirements/nginx/tools:/etc/nginx/ssl/
-      - /home/yichoi/simple_docker_nginx_html/public/html:/var/www/
+      - wp-volume:/var/www/
     restart: always
 
   mariadb:
@@ -34,22 +34,22 @@ services:
       - inception
     restart: always
 
-    wordpress:
-      build:
-        context: .
-        dockerfile: requirements/wordpress/Dockerfile
-        args:
-          DB_NAME: ${DB_NAME}
-          DB_USER: ${DB_USER}
-          DB_PASS: ${DB_PASS}
-      container_name: wordpress
-      depends_on:
-        - mariadb
-      restart: always
-      networks:
-        - inception
-      volumes:
-        - wp-volume:/var/www/
+  wordpress:
+    build:
+      context: .
+      dockerfile: requirements/wordpress/Dockerfile
+      args:
+        DB_NAME: ${DB_NAME}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    restart: always
+    networks:
+      - inception
+    volumes:
+      - wp-volume:/var/www/
 
 volumes:
   wp-volume:
