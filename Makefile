@@ -1,30 +1,35 @@
-name = simple_nginx_html
-
+name = inception
 all:
-	@printf "Launch 구성 ${name}...\n"
-	@docker-compose -f ./srcs/docker-compose.yml up -d
+	@printf "Launch configuration ${name}...\n"
+	@bash srcs/requirements/wordpress/tools/make_dir.sh
+	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d
 
 build:
-	@printf "Build 구성 ${name}...\n"
-	@docker-compose -f ./srcs/docker-compose.yml up -d --build
+	@printf "Building configuration ${name}...\n"
+	@bash srcs/requirements/wordpress/tools/make_dir.sh
+	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
 
 down:
-	@printf "Stopping 구성 ${name}...\n"
-	@docker-compose -f ./srcs/docker-compose.yml down
+	@printf "Stopping configuration ${name}...\n"
+	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env down
 
-re:
-	@printf "Rebuild 구성 ${name}...\n"
-	@docker-compose -f ./srcs/docker-compose.yml up -d --build
+re: down
+	@printf "Rebuild configuration ${name}...\n"
+	@docker-compose -f ./srcs/docker-compose.yml --env-file srcs/.env up -d --build
 
 clean: down
-	@printf "Cleaning 구성 ${name}...\n"
+	@printf "Cleaning configuration ${name}...\n"
 	@docker system prune -a
+	@sudo rm -rf ~/data/wordpress/*
+	@sudo rm -rf ~/data/mariadb/*
 
 fclean:
-	@printf "Total clean of all 구성 Docker\n"
+	@printf "Total clean of all configurations docker\n"
 	@docker stop $$(docker ps -qa)
 	@docker system prune --all --force --volumes
 	@docker network prune --force
 	@docker volume prune --force
+	@sudo rm -rf ~/data/wordpress/*
+	@sudo rm -rf ~/data/mariadb/*
 
 .PHONY	: all build down re clean fclean
